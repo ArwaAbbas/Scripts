@@ -1,0 +1,14 @@
+#!/bin/bash
+
+#Test for 1 sample
+#for sample in $(ls CTOT_13-31-V4-S-D_Anello_contig_list.txt); do
+
+#Only extract contigs from Donor BAL samples
+for sample in $(ls *DB-D_Anello_contig_list.txt); do
+	samplename=${sample%%_Anello_contig_list.txt}
+	for contig in $(ls ~/17_CTOT_Longitudinal/fixednames_sunbeam_output/assembly/"$samplename"_assembly/final-contigs.fa); do
+		echo $sample $samplename $contig
+		filter_fasta.py -f $contig -o "$samplename"_Anello_contigs.fa -s $sample
+		mv "$samplename"_Anello_contigs.fa DonorAnelloContigs/
+	done
+done

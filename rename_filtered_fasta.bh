@@ -1,0 +1,9 @@
+#!/bin/bash
+
+for file in $(ls *_filtered_R2_noTransSeq.fasta);do
+        echo $file
+	no_pre=${file%%_*}_filtered_R2.fasta
+	echo $no_pre
+	cp $file /media/THING2/arwa/2_CTOT_PGD_Data/NewContigs/AllNewContigs/SharedContigs/$no_pre
+done
+

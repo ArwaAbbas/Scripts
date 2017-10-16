@@ -1,0 +1,26 @@
+#!/bin/bash
+
+for file in  `ls D*_Minimo_nonhum_contig.fa`; do
+	echo $file
+	donor=${file%%_Minimo_nonhum_contig.fa}
+	sample_id=${donor#D}
+	visit=V${sample_id}
+	echo $donor $visit
+	visit_R1=${visit}_filtered_R1.fasta
+	visit_R2=${visit}_filtered_R2.fasta
+	echo $visit_R1 $visit_R2
+		if [ ! -e "$file" ]; then
+                echo "File does not exist"
+                else
+                bowtie2-build $file $file 
+		bowtie2 -f --local -t --very-sensitive-local\
+		-x $file -1 $visit_R1\
+		-2 $visit_R2 -S  ${donor}.sam
+		samtools view -bS ${donor}.sam > ${donor}.bam
+		samtools sort ${donor}.bam ${donor}.sorted
+		mv ${donor}.sorted.bam ${donor}.bam
+		samtools index ${donor}.bam
+		samtools idxstats ${donor}.bam > ${donor}.idxstats.tsv
+	fi
+done
+

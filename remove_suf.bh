@@ -1,0 +1,14 @@
+#!/bin/bash
+
+for file in $(ls D*); do
+        samplename=${file%%_*}_Minimo_contig.fa
+	echo $samplename
+	mv $file $samplename
+done
+
+for file in $(ls V*); do
+        samplename=${file%%_*}_Minimo_contig.fa
+        echo $samplename
+	mv $file $samplename
+done
+

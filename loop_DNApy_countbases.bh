@@ -1,0 +1,39 @@
+#!/bin/bash
+
+#Use DNApy to count bases covered for each contig (genome) in each alignment file
+
+#Test for one sample.Works
+#for bam in $(ls ../../CTOT_*Anello_Alignments/Donor_Unique_Coverage/all_donor_Anello_contigs_CTOT_13-31-V1-DB-D_filtered_2.bam); do
+
+#Test for all samples within one subject.Works
+#for bam in $(ls ../../CTOT_*Anello_Alignments/Donor_Unique_Coverage/all_donor_Anello_contigs_CTOT_13-31*_filtered_2.bam); do
+
+#For all alignments to Donor Contigs
+for bam in $(ls ../../CTOT_*Anello_Alignments/Donor_Unique_Coverage/all_donor_Anello_contigs_CTOT_*_filtered_2.bam); do
+	subjectid=${bam%%_Anello_Alignments*}
+	subjectid=${subjectid##../../}
+	filename=${bam%%.bam}
+	filename=${filename##../../CTOT_*Anello_Alignments/Donor_Unique_Coverage/}
+	output=${filename}_per_bp_cov.txt
+	echo $bam
+	echo $subjectid
+	echo $output
+	mkdir ../../"$subjectid"_Anello_Alignments/Donor_Unique_Coverage/
+	python countbases.py -v $bam | cut -d ',' -f 1-2,4-7 > $output
+	mv $output ../../"$subjectid"_Anello_Alignments/Donor_Unique_Coverage/
+done
+
+#For all alignments to Recipient Contigs
+for bam in $(ls ../../CTOT_*Anello_Alignments/Recipient_Unique_Coverage/all_postrep_serum_Anello_contigs_CTOT_*_filtered_2.bam); do
+        subjectid=${bam%%_Anello_Alignments*}
+        subjectid=${subjectid##../../}
+        filename=${bam%%.bam}
+        filename=${filename##../../CTOT_*Anello_Alignments/Recipient_Unique_Coverage/}
+        output=${filename}_per_bp_cov.txt
+        echo $bam
+        echo $subjectid
+        echo $output
+        mkdir ../../"$subjectid"_Anello_Alignments/Recipient_Unique_Coverage/
+        python countbases.py -v $bam | cut -d ',' -f 1-2,4-7 > $output
+        mv $output ../../"$subjectid"_Anello_Alignments/Recipient_Unique_Coverage/
+done

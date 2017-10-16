@@ -1,0 +1,16 @@
+#!/bin/bash
+
+#for file in $(ls FilteredFasta/*R1_fasta); do
+
+#test for one file
+for file in $(ls PCMP_test_R1.fastq); do
+	echo $file
+	no_suf=${file%_interleaved.fasta}
+	samplename=${no_suf#PCMP_}
+	samplename=${samplename%_R1.fastq}
+	echo $samplename
+	r2=PCMP_${samplename}_R2.fastq
+	echo $r2
+	python /media/THING2/arwa/8_New_CTOT_PGD_DNA_HiSeq/Metaphlan2/PhylogeneticProfiler/phyloprofiler.py --forward-reads $file --reverse-reads $r2 --summary-file "$samplename".json --output-dir /media/THING2/arwa/8_New_CTOT_PGD_DNA_HiSeq/Metaphlan2/FastqResults
+
+done

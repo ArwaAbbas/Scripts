@@ -1,0 +1,25 @@
+#!/bin/bash
+
+for file in $(ls *_interleaved.fasta);do
+#test for one interleaved reads file
+#for file in $(ls test_interleaved.fasta);do
+
+#test for one file with paired reads
+#for file in $(ls test_R1_matched.fasta); do
+	echo $file
+	#samplename=`echo $file | cut -d '/' -f6 | cut -d '_' -f1-3`
+	samplename=${file%_interleaved.fasta}
+	#samplename=${samplename%_R1_matched.fasta}
+	echo $samplename
+	#r2=${samplename}_R2_matched.fasta
+	#echo $r2
+	#paired reads
+	#python /usr/local/metaphlan2/metaphlan2.py $file,$r2 --mpa_pkl /usr/local/metaphlan2/db_v20/mpa_v20_m200.pkl --input_type fasta --bowtie2db /usr/local/metaphlan2/db_v20/mpa_v20_m200 --bowtie2out "$samplename"_v2.bt2out.txt --nproc 10 -t rel_ab -o "$samplename"_metaphlan_v2.txt
+	#mv "$samplename"_metaphlan_v2.txt /media/THING2/arwa/8_New_CTOT_PGD_DNA_HiSeq/Metaphlan2/Results
+	#mv "$samplename"_v2.bt2out.txt /media/THING2/arwa/8_New_CTOT_PGD_DNA_HiSeq/Metaphlan2/Results
+	#interleaved reads
+	python /usr/local/metaphlan2/metaphlan2.py $file --mpa_pkl /usr/local/metaphlan2/db_v20/mpa_v20_m200.pkl --input_type fasta --bowtie2db /usr/local/metaphlan2/db_v20/mpa_v20_m200 --bowtie2out "$samplename"_int_v2.bt2out.txt --nproc 10 -t rel_ab -o "$samplename"_int_metaphlan_v2.txt
+	mv "$samplename"_int_metaphlan_v2.txt /media/THING2/arwa/8_New_CTOT_PGD_DNA_HiSeq/Metaphlan2/Results
+	mv "$samplename"_int_v2.bt2out.txt /media/THING2/arwa/8_New_CTOT_PGD_DNA_HiSeq/Metaphlan2/Results
+
+done

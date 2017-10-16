@@ -1,0 +1,17 @@
+#!/bin/bash
+
+for contig in `ls *_contig.fa`; do
+#test for one case
+#for contig  in $(ls D11002_TAAGGCGA-GCGTAAGA_L002_contig.fa); do
+	Minimo $contig -D FASTA_EXP=1
+done
+
+for file in $(ls *contig-contigs.fa); do
+        filename=${file%%_contig-contigs.fa}_Minimo_contig.fa
+        mv $file $filename
+done
+
+for contig in $(ls *_Minimo_contig.fa); do
+        mv $contig MinimoContigs/$contig
+done
+

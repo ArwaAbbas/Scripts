@@ -1,0 +1,37 @@
+#!/bin/bash
+
+##Running BLASTp of ORFs against NCBI nr protein database
+#FASTAs containing ORFs are on microb120.
+#Run script on microb191 because it has the newer version of BLAST and importantly, the actual database.
+
+
+#Test that there's nothing wrong with running BLASTp on protein database in same directory. Works
+#blastp -db CTOT_11-03-V1-DB_testDB.fa -query CTOT_11-03-V1-DB-D_unknown_ORFS.fa -out test.out -outfmt 7
+
+#Test one sample with moderate number of sequences.Works
+#for seqs in `ls /media/THING2-RO/arwa/17_CTOT_Longitudinal/UnknownContigs/ContamFiltered/PredictedORFs/CTOT_11-03-V1-DB-D_unknown_ORFS.fa`; do
+#for seqs in `ls /media/THING2-RO/arwa/17_CTOT_Longitudinal/UnknownContigs/ContamFiltered/PredictedORFs/CTOT_11-15-V1-DB-D_unknown_ORFS.fa`; do
+
+#All samples
+#for seqs in `ls /media/THING2-RO/arwa/17_CTOT_Longitudinal/UnknownContigs/ContamFiltered/PredictedORFs/*_unknown_ORFS.fa`; do
+
+#Donor BAL and post-operative serum samples only
+for seqs in `ls /media/THING2-RO/arwa/17_CTOT_Longitudinal/UnknownContigs/ContamFiltered/PredictedORFs/*V1*_unknown_ORFS.fa | grep -v "V1-B"`; do
+
+	samplename=${seqs%%_unknown_ORFS.fa}
+        samplename=${samplename##/media/THING2-RO/arwa/17_CTOT_Longitudinal/UnknownContigs/ContamFiltered/PredictedORFs/}
+        echo $seqs $samplename
+
+	#Test that there's nothing wrong with running BLASTp on a small, local protein database (Virgin database).Works
+	#blastp -db /media/THING1-RO/local/genomeIndexes/blast/02252014_Virgin_VLP_DB/vlpDB_nr.c95.fasta -query $seqs -out test2.out -outfmt 7
+
+	#Running specific version of BLAST on local copy of NCBI nr protein database. Downloaded September 2017
+	/home/everett/BLAST/ncbi-blast-2.6.0+/bin/blastp -db /home/everett/BLAST/refSeq_nr_protein/db -query $seqs -out "$samplename"_BLASTp.out -evalue 10e-5 -qcov_hsp_perc 60 -max_target_seqs 1 -num_threads 4 -outfmt '7 qaccver saccver pident length mismatch gapopen qstart qend sstart send evalue bitscore'
+
+	#Parse BLAST results to delete comment lines and keep query ID, subject ID, %identity, alignment length. Creates a file with no header
+	sed '/^#/ d' "$samplename"_BLASTp.out | cut -f 1,2,3,4 | column -t > "$samplename"_BLASTp_results.txt
+
+	mv "$samplename"_BLASTp.out BLASTnrResults/
+	mv "$samplename"_BLASTp_results.txt BLASTnrResults/
+done
+

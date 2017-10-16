@@ -1,0 +1,24 @@
+#!/bin/bash
+
+#Test on one file
+
+#for annotation in $(ls D12009_S48_L001_Minimo_contig_annotation.txt); do
+for annotation in $(ls *_Minimo_contig_annotation.txt); do
+	echo $annotation
+	list=${annotation%%_Minimo_contig_annotation.txt}_human_contig.txt
+	echo $list
+	./extract_human_contigs.R -i ${annotation} -f ${list}
+done
+
+#for file in $(ls D12009_S48_L001_Minimo_contig.fa); do
+for file in $(ls *_Minimo_contig.fa); do
+	echo $file
+	list=${file%%_Minimo_contig.fa}_human_contig.txt
+	echo $list
+	output=${file%%_Minimo_contig.fa}_Minimo_human_contig.fa
+	echo $output
+	filter_fasta.py -f ${file} -o ${output} -s ${list}
+done
+
+
+

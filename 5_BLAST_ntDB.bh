@@ -1,0 +1,22 @@
+#!/bin/bash
+
+#for f in `ls *_interleaved.fasta`; do
+#test one file
+for f in `ls V12016_interleaved.fasta`; do
+	echo $f
+	filename=${f%%_interleaved.fasta}
+	echo $filename
+
+##running BLAST for all reads against NCBI NT DB
+
+#Using a central database formatted from NCBI nt genomes
+#blastn -db /media/THING1/local/genomeIndexes/blast_nt/nt -query "$filename"_interleaved.fasta -out "$filename"_nt_result.out -evalue 10e-3 -max_target_seqs 100 -outfmt 6
+
+##Using a central database formatted from NCBI nt genomes. Fewer target sequences and higher Expect Value
+blastn -db /media/THING1/local/genomeIndexes/blast_nt/nt -query "$filename"_interleaved.fasta -out "$filename"_nt_result.out -evalue 10e-5 -max_target_seqs 5 -outfmt 6
+
+#Move BLAST Results and to new directory
+
+mv "$filename"_nt_result.out /media/THING2/arwa/8_New_CTOT_PGD_DNA_HiSeq/ViralBLAST
+
+done

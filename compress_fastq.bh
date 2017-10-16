@@ -1,0 +1,8 @@
+#!/bin/bash
+
+for file in $(ls *.fastq); do
+#test on one file
+#for file in $(ls D11002_TAAGGCGA-GCGTAAGA_L002_R1_001.fastq); do
+	echo $file
+	gzip $file
+done

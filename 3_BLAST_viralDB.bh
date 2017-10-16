@@ -1,0 +1,24 @@
+#!/bin/bash
+
+for f in `ls *_interleaved.fasta`; do
+#for f in `ls D11002_TAAGGCGA-GCGTAAGA_L002_interleaved.fasta`; do
+	echo $f
+	filename=${f%%_interleaved.fasta}
+	echo $filename
+
+##running BLAST for all reads against NCBI Viral DB
+
+#Using a local database formatted from NCBI Viral genomes from /media/THING1/local/refseq/viral/viral.1.1.genomic.fna
+blastn -db /media/THING2/arwa/7_CTOT_PGD_DNA_HiSeq/viral -query "$filename"_interleaved.fasta -out "$filename"_result.out -evalue 10e-5 -max_target_seqs 1 -outfmt 7
+
+#Also Works but is an old local copy
+#blastn -db /home/rohinis/viral_blastdb/viral.1.1.genomic.fna -query "$filename"_interleaved.fasta -out "$filename"_result.out -evalue 10e-5 -max_target_seqs 1 -outfmt 7
+
+##From BLAST output to tab delimited file containing coverage information and paired ends information
+perl /media/THING2/christel/0_BLAST_Analysis_Tools/BlastOutput2FullCoverage.pl /media/THING2/christel/0_BLAST_Analysis_Tools/viral_db.list "$filename"_result.out | sort -nk 5 -t $'\t' > "$filename"_fullcoverage.txt
+
+#Move BLAST Results and Coverage Files to new directory
+mv "$filename"_result.out /media/THING2/arwa/7_CTOT_PGD_DNA_HiSeq/BlastViralDBCoverage
+mv "$filename"_fullcoverage.txt /media/THING2/arwa/7_CTOT_PGD_DNA_HiSeq/BlastViralDBCoverage
+
+done

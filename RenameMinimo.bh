@@ -1,0 +1,12 @@
+#!/bin/bash
+
+for file in $(ls *contig-contigs.fa); do
+	filename=${file%%_contig-contigs.fa}_Minimo_contig.fa
+	mv $file $filename
+done
+
+for contig in $(ls *_Minimo_contig.fa); do
+	cp $contig  ~/3_CTOT_PGD_RNA_All/Contigs/AllContigs/MinimoContigs
+done
+
+

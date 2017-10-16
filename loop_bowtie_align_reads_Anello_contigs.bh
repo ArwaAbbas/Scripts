@@ -1,0 +1,37 @@
+#!/bin/bash
+
+
+#Test for 1 sample
+#for contigs in $(ls CTOT_13-28-V1-DB-D_Anello_contigs.fa); do
+
+for contigs in $(ls *Anello_contigs.fa); do
+	samplename=${contigs%%-V1-DB-D_Anello_contigs.fa}
+	samplename2=${samplename//\-/_}
+	for samples in $(ls ~/17_CTOT_Longitudinal/fixednames_sunbeam_output/qc/decontam/"$samplename"*_R1.fastq); do
+		timepoint=${samples%%_R1.fastq}
+		for id in $timepoint; do
+			r1=${id}_R1.fastq
+			r2=${id}_R2.fastq
+			cleanid=${id##~/17_CTOT_Longitudinal/fixednames_sunbeam_output/qc/decontam/}
+			cleanid=${cleanid%%_R1.fastq}
+			mkdir "$samplename"_Donor_Alignments
+			output="$samplename"_Donor_Anello_"$cleanid"
+			echo $contigs
+			echo $r1 $r2
+			echo $output
+			echo $samplename
+			bowtie2 -t -q --very-sensitive-local --local -x $contigs -1 $r1 -2 $r2 -S "$output".sam --no-mixed --np 2 --rdg 6,4 --no-discordant -p 8
+			samtools view -bS "$output".sam > "$output".bam
+                	#Fixed this to work with new version of samtools
+			samtools sort "$output".bam -o "$output".sorted.bam
+                	mv "$output".sorted.bam "$output".bam
+                	samtools index "$output".bam
+                	mv "$output".bam "$samplename"_Donor_Alignments/
+                	mv "$output".sam "$samplename"_Donor_Alignments/
+                	mv "$output".bam.bai "$samplename"_Donor_Alignments/
+		done
+	done
+
+
+done
+

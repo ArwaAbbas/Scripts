@@ -1,0 +1,14 @@
+#!/bin/bash
+
+#For each subject, perform multiple sequence alignment of nucleotide sequences of contigs
+#Activate QIIME to use MUSCLE 3.8.31
+
+
+#Test for one sample
+#for contigs in $(ls 11-21-V1-DB-D_labeled.fasta); do
+
+for contigs in $(ls *labeled.fasta); do
+        samplename=${contigs%%_labeled.fasta}
+	muscle -in $contigs -out "$samplename"_labeled_aligned.fasta
+	mv "$samplename"_labeled_aligned.fasta MultipleSequenceAlignment/
+done

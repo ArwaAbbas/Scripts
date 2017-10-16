@@ -1,0 +1,19 @@
+#!/bin/bash
+
+#Create fasta files with identifiers from txt files of sequences
+
+for file in $(ls *.seq); do
+#test for one example
+#for file in $(ls testing_rename.seq); do
+	filename=${file%%.seq}
+	echo $file $filename
+	sed -i -e '1i>'"$filename" $file
+	cp $file $filename.fasta
+done
+
+
+
+
+
+
+

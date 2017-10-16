@@ -1,0 +1,28 @@
+#!/bin/bash 
+
+path=$(pwd)
+folders=`ls -l | grep "^d" | awk '{ print $9 }'`
+for virus in $folders; do
+    cd $path/$virus
+    echo $virus
+    for file in `ls *.fa`; do
+	echo "$file"
+	bowtie2-build -f $file $file	
+	cat ../SamplesLists.txt | while read a; do
+	    sample_name=${a%%_filtered_R1.fasta}
+	    echo $sample_name
+	    bowtie2 -f --local -t --very-sensitive-local -x $file -1 ../../"$sample_name"_filtered_R1.fasta -2 ../../"$sample_name"_filtered_R2.fasta -S "$virus"_"$sample_name".sam
+	    samtools view -bS "$virus"_"$sample_name".sam > "$virus"_"$sample_name".bam
+	    samtools sort "$virus"_"$sample_name".bam "$virus"_"$sample_name".sorted
+	    mv "$virus"_"$sample_name".sorted.bam "$virus"_"$sample_name".bam
+	    samtools index "$virus"_"$sample_name".bam
+	    samtools idxstats "$virus"_"$sample_name".bam > "$virus"_"$sample_name".idxstats.tsv
+	done
+    done
+done
+
+
+
+
+
+

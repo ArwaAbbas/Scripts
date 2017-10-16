@@ -1,0 +1,9 @@
+#!/bin/bash
+
+#for tree in `ls *.tre`; do
+#test for one file
+for tree in `ls NCBI_ORF1_aa_aligned_filtered_V2.tre`; do
+	echo $tree
+	perl tree_report_nodes.pl $tree
+done
+

@@ -1,0 +1,15 @@
+#!/bin/bash
+
+for file in `ls /media/THING2/arwa/8_New_CTOT_PGD_DNA_HiSeq/FilteredFasta/*_interleaved.fasta`; do
+#test for one file
+#for file in `ls /media/THING2/arwa/8_New_CTOT_PGD_DNA_HiSeq/FilteredFasta/V12016_interleaved.fasta`; do
+	echo $file
+	sample_name=${file%%_interleaved.fasta}
+	sampleid=${sample_name##/media/THING2/arwa/8_New_CTOT_PGD_DNA_HiSeq/FilteredFasta/}
+	echo $sampleid
+	blast_result=${sampleid}_result.out
+	echo $blast_result
+	mkdir Results/"$sampleid"
+	brocc.py -i $file -b /media/THING2/arwa/8_New_CTOT_PGD_DNA_HiSeq/BlastViralDBCoverage/$blast_result -o Results/"$sampleid" --min_species_id=80.0 --min_genus_id=80.0
+done
+

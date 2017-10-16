@@ -1,0 +1,31 @@
+#!/bin/bash
+
+for file in `ls D*/Standard_Taxonomy.txt`; do
+#test for one file
+#for file in `ls D11002/Standard_Taxonomy.txt`; do
+	echo $file
+	filename=${file%%/Standard_Taxonomy.txt}
+	echo $filename
+	grep -v "No hits found in database" $file > "$filename"_viral_result.txt
+done
+
+for file in `ls V*/Standard_Taxonomy.txt`; do
+        echo $file
+        filename=${file%%/Standard_Taxonomy.txt}
+        grep -v "No hits found in database" $file > "$filename"_viral_result.txt
+done
+
+
+for result in `ls *viral_result.txt`; do
+#test for one file
+#for result in `ls D11002_viral_result.txt`; do
+	echo $result
+	samplename=${result%%_viral_result.txt}
+	echo $samplename
+	grep -v -e "All BLAST hits were filtered" \
+	-e "Abundance of low coverage hits" -e "Could not find consensus" \
+	$result > "$samplename"_viral_tax.txt
+	mv "$samplename"_viral_result.txt AllResults/
+	mv "$samplename"_viral_tax.txt AllResults/
+
+done

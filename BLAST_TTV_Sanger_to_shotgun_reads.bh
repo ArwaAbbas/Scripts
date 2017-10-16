@@ -1,0 +1,37 @@
+#!/bin/bash
+
+
+##Running BLAST of TTV Sanger sequence reads against metagenomic reads
+
+#Donor 1
+for f in `ls SangerReads/*D1*.fasta `; do
+#test for one sample
+#for f in `ls SangerReads/87.D1.TTV.PCR.F_G11_083.fasta`; do
+        samplename=${f##SangerReads/[0-9][0-9]\.}
+        samplename=${samplename%%_*}
+        echo $f $samplename
+	#Using a local database formatted from all metagenomic reads
+	blastn -db ShotgunReads/Donor_01_all_shotgun_reads.fasta -query $f -out "$samplename"_BLAST_result.out -word_size 25 -evalue 10e-5 -max_hsps 1 -outfmt 7 -num_threads 4
+	mv "$samplename"_BLAST_result.out BlastCoverage/
+done
+
+#Donor 2
+for f in `ls SangerReads/*D2*.fasta `; do
+        samplename=${f##SangerReads/[0-9][0-9]\.}
+        samplename=${samplename%%_*}
+        echo $f $samplename
+        #Using a local database formatted from all metagenomic reads
+        blastn -db ShotgunReads/Donor_02_all_shotgun_reads.fasta -query $f -out "$samplename"_BLAST_result.out -word_size 25 -evalue 10e-5 -max_hsps 1 -outfmt 7 -num_threads 4
+        mv "$samplename"_BLAST_result.out BlastCoverage/
+done
+
+#Filter outputs
+for output in $(ls BlastCoverage/*BLAST_result.out); do
+        samplename=${output%%_BLAST_result.out}
+        samplename=${samplename##BlastCoverage/}
+        echo $output $samplename
+        #Delete comment lines and keep query ID, subject ID, %identity, alignment length
+        sed '/^#/ d' $output | cut -f 1,2,3,4 | column -t > "$samplename"_filtered_BLAST_results.txt
+	mv "$samplename"_filtered_BLAST_results.txt BlastCoverage/
+done
+

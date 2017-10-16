@@ -1,0 +1,18 @@
+#!/bin/bash
+
+for file in $(ls *_BROCC_reads.txt); do
+
+#test for one file
+#for file in $(ls SM_BROCC_reads.txt); do
+#for file in $(ls D11010_BROCC_reads.txt); do
+	samplename=${file%%_BROCC_reads.txt}
+	sampleblast=${samplename}_result.out
+	outsuf="BROCC_filtered_BLAST_output.txt"
+	outsuf2="host_annotation.txt"
+	outsuf3="annotation_table.txt"
+	echo $samplename
+	python read_BROCC_read_list.py $file /media/THING2/arwa/8_New_CTOT_PGD_DNA_HiSeq/BlastViralDBCoverage/"$sampleblast" ${samplename}_$outsuf
+	python get_ac_numbers.py ${samplename}_$outsuf > ${samplename}_$outsuf2
+	Rscript merge_BLAST_viral_host_annotation.R ${samplename}_$outsuf ${samplename}_$outsuf2 ${samplename}_viral_tax.txt ${samplename}_$outsuf3
+	mv ${samplename}_${outsuf3} AnnotationTables/
+done

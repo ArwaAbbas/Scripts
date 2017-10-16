@@ -1,0 +1,19 @@
+#!/bin/bash
+
+echo -e "Sample\tORF1_Sequences"
+
+for file in $(ls *_ORF1_nt_labeled.fasta); do
+#test for one file
+#for file in $(ls 13-31-V4-S-D_ORF1_nt_labeled.fasta); do
+        #echo $file
+	filename=${file%%_ORF1_nt_labeled.fasta}
+        #echo $filename
+	ORF1=`grep ">" $file | wc -l`
+        #echo $ORF1
+	echo -e "$filename\t$ORF1"
+done
+
+
+
+
+

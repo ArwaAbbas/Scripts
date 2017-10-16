@@ -1,0 +1,21 @@
+#!/bin/bash
+
+#for f in `ls *_interleaved.fasta`; do
+#test one file
+for f in `ls V12016_interleaved.fasta`; do
+	echo $f
+	filename=${f%%_interleaved.fasta}
+	echo $filename
+
+##running BLAST for all reads against NCBI Viral DB
+
+#Using a local database formatted from NCBI Viral genomes from /media/THING1/local/refseq/viral/viral.1.1.genomic.fna
+blastn -db /media/THING2/arwa/8_New_CTOT_PGD_DNA_HiSeq/viral -query "$filename"_interleaved.fasta -out "$filename"_viral_result_3.out -num_threads 8 -evalue 10e-5 -max_target_seqs 100  -outfmt 7
+
+#Also Works but is an old local copy
+#blastn -db /home/rohinis/viral_blastdb/viral.1.1.genomic.fna -query "$filename"_interleaved.fasta -out "$filename"_result.out -evalue 10e-5 -max_target_seqs 1 -outfmt 7
+
+#Move BLAST Results and Coverage Files to new directory
+mv "$filename"_viral_result_3.out /media/THING2/arwa/8_New_CTOT_PGD_DNA_HiSeq/TestBROCC
+
+done

@@ -1,0 +1,44 @@
+#!/bin/bash
+
+
+#Requires QIIME environment to run filter_fasta.py
+
+#Test on a negative control sample. This is used as a positive control as all contigs should have hits and thus be identified.Works
+#for output in $(ls NegControlHits/CTOT_SM-D-1_neg_result.out); do
+
+
+#Test on single clinical sample. Works
+#for output in $(ls NegControlHits/CTOT_13-28-V1-DB-D_neg_result.out); do
+
+#For all samples
+for output in $(ls NegControlHits/*neg_result.out); do
+
+	samplename=${output%%_neg_result.out}
+        samplename=${samplename##NegControlHits/}
+        echo $output $samplename
+
+	#Full report of search against extraction blank contigs-Delete comment lines and keep query ID, subject ID, %identity, alignment length. No header
+        #sed '/^#/ d' $output | cut -f 1,2,3,4 | column -t > "$samplename"_neg_results.txt
+	#Just contig names to filter from original set of contigs.
+	#sed '/^#/ d' $output | cut -f 1 | column -t > "$samplename"_contam_list.txt
+
+        #Full report of search against prewash contigs-Delete comment lines and keep query ID, subject ID, %identity, alignment length. No header
+        #sed '/^#/ d' NegControlHits/"$samplename"_prewash_result.out | cut -f 1,2,3,4 | column -t > "$samplename"_prewash_results.txt
+        #Just contig names to filter from original set of contigs. No header
+        #sed '/^#/ d' NegControlHits/"$samplename"_prewash_result.out | cut -f 1 | column -t >> "$samplename"_contam_list.txt
+
+	#Test on single negative control sample. Works
+	#filter_fasta.py -f /media/THING2/arwa/17_CTOT_Longitudinal/NegativeControlContigs/"$samplename"_min1k_contigs.fa -s "$samplename"_contam_list.txt -n -o "$samplename"_contam_filtered.fa
+
+	#For clinical samples
+	#filter_fasta.py -f /media/THING2/arwa/17_CTOT_Longitudinal/UnknownContigs/LowComplexityFiltered/"$samplename"_unknown_min1k_contigs_filtered.fa -s "$samplename"_contam_list.txt -n -o "$samplename"_contam_filtered.fa
+
+	#Clean up
+	#mv "$samplename"_contam_filtered.fa ContamFiltered/
+	#mv "$samplename"_neg_results.txt NegControlHits/
+	#mv "$samplename"_prewash_results.txt NegControlHits/
+	#rm "$samplename"_contam_list.txt
+
+done
+
+

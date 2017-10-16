@@ -1,0 +1,12 @@
+#!/bin/bash
+
+#echo -e "ORF1_Contig\tLength"
+
+#for ORF1 in $(ls ORF1/*labeled_ORF1.fasta); do
+	#python fasta_length.py $ORF1
+#done
+
+echo -e "ORF2_Contig\tLength"
+for ORF2 in $(ls ORF2/*labeled_ORF2.fasta);do
+	python fasta_length.py $ORF2
+done

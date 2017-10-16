@@ -1,0 +1,83 @@
+#!/bin/bash
+
+#Aligning reads from individual BAL and Serum samples after transplantation
+
+#Test for 1 sample. Works
+#for contigs in $(ls CTOT_11-03-V1-S-D_Anello_contigs.fa); do
+
+for contigs in $(ls *V1-S-D_Anello_contigs.fa); do
+	samplename=${contigs%%-V1-S-D_Anello_contigs.fa}
+	for samples in $(ls ~/17_CTOT_Longitudinal/fixednames_full_decontam_sunbeam_output/qc/decontam/"$samplename"*_R1.fastq); do
+		timepoint=${samples%%_R1.fastq}
+		for id in $timepoint; do
+			r1=${id}_R1.fastq
+			r2=${id}_R2.fastq
+			cleanid=${id##~/17_CTOT_Longitudinal/fixednames_full_decontam_sunbeam_output/qc/decontam/}
+			cleanid=${cleanid%%_R1.fastq}
+			mkdir "$samplename"_Recipient_Alignments
+			output="$samplename"_postrep_serum_Anello_contigs_"$cleanid"
+			echo $contigs
+			echo $r1 $r2
+			echo $output
+			echo $samplename
+			bowtie2 -t -q --very-sensitive-local --local -x $contigs -1 $r1 -2 $r2 -S "$output".sam --no-mixed --np 2 --rdg 6,4 --no-discordant -p 8
+                	mv "$output".sam "$samplename"_Recipient_Alignments/
+		done
+	done
+done
+
+#Pool subject reads
+
+#test_list_samples=(CTOT_11-03)
+list_samples=(CTOT_11-03 CTOT_11-09 CTOT_11-27 CTOT_12-02 CTOT_12-12 CTOT_13-19 CTOT_13-28 CTOT_13-31)
+
+#Test for one subject. Works
+#for samples in ${test_list_samples[@]};do
+
+#Going through list of subjects with visit 1 serum contigs
+for samples in ${list_samples[@]}; do
+                echo $samples
+                for reads in $(ls ~/17_CTOT_Longitudinal/fixednames_full_decontam_sunbeam_output/qc/decontam/"$samples"*.fastq | grep -v "V1-S"); do
+                        sampleid=${reads%%_R*.fastq}
+                        cleanid=${sampleid##/home/arwa/17_CTOT_Longitudinal/fixednames_full_decontam_sunbeam_output/qc/decontam/}
+                        cleanid=${cleanid:0:10}
+                        echo $reads
+                        echo $sampleid
+                        echo $cleanid
+                        cat "$sampleid"_R1.fastq >> "$cleanid"_pooled_R1.fastq
+                        cat "$sampleid"_R2.fastq >> "$cleanid"_pooled_R2.fastq
+                done
+done
+
+#Move Pooled Reads. Works
+for pools in $(ls *pooled_R*.fastq); do
+        sampleid=${pools%%_pooled_*}
+        mkdir "$sampleid"_Pooled_Read_Alignments
+        mv $pools "$sampleid"_Pooled_Read_Alignments/
+done
+
+#Align Pooled Reads to Individual and Combined Sets of Postreperfusion serum contigs
+
+#Test for 1 set of pooled reads. Works
+#for reads in $(ls CTOT_11-03_Pooled_Read_Alignments/*.fastq); do
+for reads in $(ls *_Pooled_Read_Alignments/*.fastq); do
+        id=${reads%%_pooled_R*}
+        r1=${id}_pooled_R1.fastq
+        r2=${id}_pooled_R2.fastq
+        subjectid=${id##*_Pooled_Read_Alignments/}
+        echo $r1 $r2
+        echo $subjectid
+        for contigs in $(ls *V1-S-D_Anello_contigs.fa);do
+                serumname=${contigs%%-V1-S-D_Anello_contigs.fa}
+                output="$serumname"_postrep_serum_Anello_contigs_"$subjectid"_pooled_reads
+             	output2=all_CTOT_postrep_serum_Anello_contigs_"$subjectid"_pooled_reads
+		echo $serumname
+                echo $output
+		echo $output2
+                bowtie2 -t -q --very-sensitive-local --local -x $contigs -1 $r1 -2 $r2 -S "$output".sam --no-mixed --np 2 --rdg 6,4 --no-discordant -p 8
+		bowtie2 -t -q --very-sensitive-local --local -x all_CTOT_Postrep_Serum_Anello_contigs.fasta -1 $r1 -2 $r2 -S "$output2".sam --no-mixed --np 2 --rdg 6,4 --no-discordant -p 8
+                mv "$output".sam "$subjectid"_Pooled_Read_Alignments/
+                mv "$output2".sam "$subjectid"_Pooled_Read_Alignments/
+
+	done
+done
