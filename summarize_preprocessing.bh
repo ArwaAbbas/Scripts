@@ -1,0 +1,49 @@
+#!/bin/bash
+
+#Make attrition table of Sunbeam preprocessing steps by counting paired reads
+
+
+#Healthy MiSeq Run
+#pushd /media/THING2/louis/06_HealthyTTVs/MiSeq_20170621/
+#
+#echo -e "Sample\tRawReadPairs\tRawBasePairs\tFilteredReadPairs\tBasePairs"
+#for raw1 in $(ls raw_fastq/*R1.fastq); do
+#	raw2=${raw1%%_L001_R1.fastq}
+#	raw2=${raw2}_L001_R2.fastq
+#	sample1=${raw1##raw_fastq/}
+#	sample2=${raw2##raw_fastq/}
+#	samplename=${sample1%%_*}
+#	rawreadpairs=$(cat $raw1 | echo $((`wc -l`/4)))
+#	rawbps=$(cat $raw1 $raw2 | paste - - - - | cut -f 2 | tr -d '\n' | wc -c)
+#	filt1="/home/louistaylor/THING2/06_HealthyTTVs/MiSeq_20170621/sunbeam_output/qc/decontam/""$sample1"
+#	filt2="/home/louistaylor/THING2/06_HealthyTTVs/MiSeq_20170621/sunbeam_output/qc/decontam/""$sample2"
+#	#echo $samplename $filt1 $filt2
+#	filtreadpairs=$(cat $filt1 | echo $((`wc -l`/4)))
+#	filtbps=$(cat $filt1 $filt2 | paste - - - - | cut -f 2 | tr -d '\n' | wc -c)
+#	echo -e "$samplename\t$rawreadpairs\t$rawbps\t$filtreadpairs\t$filtbps"
+#done
+
+#popd
+
+#Healthy MiSeq Run
+pushd /media/THING2/arwa/11_TTV_ORF1_Immunology/HealthyHiSeq/
+
+echo -e "Sample\tRawReadPairs\tRawBasePairs\tFilteredReadPairs\tBasePairs"
+for raw1 in $(ls FASTQ/*R1.fastq.gz); do
+        raw2=${raw1%%_R1.fastq.gz}
+        raw2=${raw2}_R2.fastq.gz
+        sample1=${raw1##FASTQ/PCMP_}
+        sample2=${raw2##FASTQ/PCMP_}
+        samplename=${sample1%%_*}
+        rawreadpairs=$(cat $raw1 | echo $((`wc -l`/4)))
+        rawbps=$(cat $raw1 $raw2 | paste - - - - | cut -f 2 | tr -d '\n' | wc -c)
+        filt1="/media/THING2/arwa/11_TTV_ORF1_Immunology/HealthyHiSeq/sunbeam_output/qc/decontam/""$sample1"
+	filt1=${filt1%.gz}
+        filt2="/media/THING2/arwa/11_TTV_ORF1_Immunology/HealthyHiSeq/sunbeam_output/qc/decontam/""$sample2"
+        filt2=${filt2%.gz}
+        filtreadpairs=$(cat $filt1 | echo $((`wc -l`/4)))
+        filtbps=$(cat $filt1 $filt2 | paste - - - - | cut -f 2 | tr -d '\n' | wc -c)
+        echo -e "$samplename\t$rawreadpairs\t$rawbps\t$filtreadpairs\t$filtbps"
+done
+
+popd

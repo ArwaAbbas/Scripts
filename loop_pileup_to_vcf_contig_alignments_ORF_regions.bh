@@ -1,0 +1,36 @@
+#!/bin/bash
+
+#Converting read alignments to pileup and VCF files
+#Alignments were done with replacement by aligning reads from each sample to a separate database of contigs built within one sample
+#Run this with sunbeam version of samtools (Version: 1.3.1 (using htslib 1.3.1))
+
+#Test for one sample. Works
+#for sample in $(ls BB3-1_Anello_Alignments/Unique_Coverage/*.bam | grep -v "all_healthy"); do
+
+#Pileups across entire contig for all samples. Excluding the alignments done without replacement done previously.
+for sample in $(ls *_Anello_Alignments/Unique_Coverage/*.bam | grep -v "all_healthy"); do
+        subjectid=${sample%%_Anello_Alignments*}
+        samplename=${sample%%.bam}
+        samplename=${samplename##*_Anello_Alignments/Unique_Coverage/}
+	contigid=${samplename%%_Anello_contigs*}_Anello_contigs
+        echo $sample
+        echo $subjectid
+        echo $samplename
+	echo $contigid
+	#Convert VCF file from pileup output for entire contig sequence
+	samtools mpileup -uf IndividualContigs/"$contigid"_labeled.fasta $sample | bcftools call -m -v > "$samplename"_var.raw.vcf
+       	#Filter low quality sites. Can also go back and only call variants with a maximum read depth.
+	bcftools filter -s LowQual -e '%QUAL<20' "$samplename"_var.raw.vcf  > "$samplename"_var.flt.vcf
+       	mv "$samplename"_var.raw.vcf "$subjectid"_Anello_Alignments/Unique_Coverage/
+       	mv "$samplename"_var.flt.vcf "$subjectid"_Anello_Alignments/Unique_Coverage/
+
+	#Convert VCF file from pileup output for putative ORF regions only
+        samtools mpileup -uf IndividualContigs/"$contigid"_labeled.fasta $sample -l PredictedORFs/all_putative_Anello_ORF_positions.bed | bcftools call -m -v > "$samplename"_ORF_var.raw.vcf
+        #Filter low quality sites. Can also go back and only call variants with a maximum read depth.
+        bcftools filter -s LowQual -e '%QUAL<20' "$samplename"_ORF_var.raw.vcf  > "$samplename"_ORF_var.flt.vcf
+        mv "$samplename"_ORF_var.raw.vcf "$subjectid"_Anello_Alignments/Unique_Coverage/
+        mv "$samplename"_ORF_var.flt.vcf "$subjectid"_Anello_Alignments/Unique_Coverage/
+
+
+
+done

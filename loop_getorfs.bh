@@ -1,0 +1,27 @@
+#!/bin/bash
+
+#Using EMBOSS getorf which is installed locally on microb120
+
+
+#Test for one sample with and without contigs
+
+#for contigs in $(ls CTOT_13-31-V1-B-D_contam_filtered_labeled.fasta); do
+
+#for contigs in $(ls CTOT_13-31-V4-S-D_contam_filtered_labeled.fasta); do
+
+#For all samples
+for contigs in $(ls *contam_filtered_labeled.fasta); do
+        filesize=`stat -c %s $contigs`
+	echo $contigs
+		if [ $filesize = 0 ]; then
+		echo "No contigs exist for this sample"
+		else
+		echo "Contigs exist"
+		samplename=${contigs%%_contam_filtered_labeled.fasta}
+		echo $samplename
+		getorf -sequence $contigs -outseq "$samplename"_unknown_ORFS.fa -minsize 300 -find 1
+		mv "$samplename"_unknown_ORFS.fa PredictedORFs/
+		fi
+
+done
+

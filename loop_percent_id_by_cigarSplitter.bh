@@ -1,0 +1,50 @@
+#!/bin/bash
+
+#To calculate number of matches and mismatches for each read alignment in BAM file
+#CigarSplitter returns for each read the genome, number of matches, lenght of alignment, and ratio of matches to length of alignment.
+
+#Alignments to Donor Contigs
+
+#test for one file. Works
+#for bam in $(ls CTOT_11-03_Anello_Alignments/Donor_Unique_Coverage/all_donor_Anello_contigs_CTOT_11-03-V1-DB-D_filtered_2.bam); do
+
+#For all alignments
+for bam in $(ls *Anello_Alignments/Donor_Unique_Coverage/*_filtered_2.bam); do
+        subjectid=${bam%%_Anello_Alignments*}
+        mkdir "$subjectid"_Anello_Alignments/Donor_Coverage_Identity/
+	samplename=${bam%_filtered_2.bam}
+       	samplename=${samplename##CTOT_*Anello_Alignments/Donor_Unique_Coverage/}
+	echo $subjectid $samplename
+	echo -e "Contig\tNumMatches\tAlignmentLength\tRatio" > "$samplename"_coverage_identity.txt
+	bash cigarSplitter.sh $bam >> "$samplename"_coverage_identity.txt
+	mv "$samplename"_coverage_identity.txt "$subjectid"_Anello_Alignments/Donor_Coverage_Identity/
+done
+
+
+#Alignments to Postrep Recipient Contigs
+
+for bam in $(ls *Anello_Alignments/Recipient_Unique_Coverage/*_filtered_2.bam); do
+        subjectid=${bam%%_Anello_Alignments*}
+        mkdir "$subjectid"_Anello_Alignments/Recipient_Coverage_Identity/
+        samplename=${bam%_filtered_2.bam}
+        samplename=${samplename##CTOT_*Anello_Alignments/Recipient_Unique_Coverage/}
+        echo $subjectid $samplename
+        echo -e "Contig\tNumMatches\tAlignmentLength\tRatio" > "$samplename"_coverage_identity.txt
+        bash cigarSplitter.sh $bam >> "$samplename"_coverage_identity.txt
+        mv "$samplename"_coverage_identity.txt "$subjectid"_Anello_Alignments/Recipient_Coverage_Identity/
+done
+
+
+#Alignments to all Perioperative Contigs
+
+for bam in $(ls *Anello_Alignments/AllPerioperative_Unique_Coverage/*_filtered_2.bam); do
+        subjectid=${bam%%_Anello_Alignments*}
+        mkdir "$subjectid"_Anello_Alignments/AllPerioperative_Coverage_Identity/
+        samplename=${bam%_filtered_2.bam}
+        samplename=${samplename##CTOT_*Anello_Alignments/AllPerioperative_Unique_Coverage/}
+        echo $subjectid $samplename
+        echo -e "Contig\tNumMatches\tAlignmentLength\tRatio" > "$samplename"_coverage_identity.txt
+        bash cigarSplitter.sh $bam >> "$samplename"_coverage_identity.txt
+        mv "$samplename"_coverage_identity.txt "$subjectid"_Anello_Alignments/AllPerioperative_Coverage_Identity/
+done
+
